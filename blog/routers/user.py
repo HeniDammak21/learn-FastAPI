@@ -1,24 +1,21 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
+from .. import database, schemas, models
 from sqlalchemy.orm import Session
-from .. import schemas, database, oauth2
+from fastapi import APIRouter,Depends,status
 from ..repository import user
 
-
-
-router=APIRouter(
-    prefix='/user',
+router = APIRouter(
+    prefix="/user",
     tags=['Users']
 )
 
-get_db=database.get_db
+get_db = database.get_db
+
 
 @router.post('/', response_model=schemas.ShowUser)
-def create(request:schemas.User, db : Session = Depends(get_db), current_user:schemas.User = Depends(oauth2.get_current_user)):
-    return user.create(request, db)
+def create_user(request: schemas.User,db: Session = Depends(get_db)):
+    return user.create(request,db)
 
-    
-
-@router.get('/{id}', response_model=schemas.ShowUser)
-def get_user(id: int, db : Session = Depends(get_db), current_user:schemas.User = Depends(oauth2.get_current_user)):
-    return user.show(id, db)
-    
+@router.get('/{id}',response_model=schemas.ShowUser)
+def get_user(id:int,db: Session = Depends(get_db)):
+    return user.show(id,db)
